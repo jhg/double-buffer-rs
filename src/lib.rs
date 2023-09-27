@@ -225,12 +225,10 @@ mod tests {
     fn test_greater_and_less_than() {
         let mut buffer: DoubleBuffer<i32> = DoubleBuffer::default();
         *buffer = 1;
-
         assert!(buffer > -1);
         assert!(buffer < 1);
 
         buffer.swap();
-
         assert!(buffer > 0);
         assert!(buffer < 2);
     }
@@ -239,12 +237,13 @@ mod tests {
     fn test_modify_bytes_array() {
         let mut buffer: DoubleBuffer<[u8; 3]> = DoubleBuffer::default();
         buffer[1] = 2;
-
         assert_eq!(buffer[1], 0);
         assert_eq!(buffer, [0, 0, 0]);
 
-        buffer.swap();
+        assert_eq!(buffer.current, [0, 0, 0]);
+        assert_eq!(buffer.next, [0, 2, 0]);
 
+        buffer.swap();
         assert_eq!(buffer[1], 2);
         assert_eq!(buffer, [0, 2, 0]);
 
@@ -257,14 +256,14 @@ mod tests {
         let mut buffer: DoubleBuffer<[u8; 3]> = DoubleBuffer::default();
         buffer[1] = 2;
 
+        assert_eq!(buffer.current, [0, 0, 0]);
+        assert_eq!(buffer.next, [0, 2, 0]);
+
         for byte in buffer.iter_mut() {
             *byte += 1;
         }
 
-        assert_eq!(buffer, [0, 0, 0]);
-
-        buffer.swap();
-
-        assert_eq!(buffer, [1, 3, 1]);
+        assert_eq!(buffer.current, [0, 0, 0]);
+        assert_eq!(buffer.next, [1, 3, 1]);
     }
 }
