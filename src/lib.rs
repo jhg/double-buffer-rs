@@ -64,6 +64,16 @@ impl<T: Clone> DoubleBuffer<T> {
     }
 }
 
+impl<T: Default> DoubleBuffer<T> {
+    /// Swaps buffers and sets the next value to the default value of the type,
+    /// then writes will be over the default value.
+    #[inline]
+    pub fn swap_with_default(&mut self) {
+        self.swap();
+        self.next = T::default();
+    }
+}
+
 impl<T: Debug> Debug for DoubleBuffer<T> {
     #[inline]
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
@@ -200,8 +210,15 @@ mod tests {
         assert_eq!(buffer.next, 2);
     }
 
+    #[test]
+    fn test_swap_with_default() {
+        let mut buffer: DoubleBuffer<u32> = DoubleBuffer::new(1, 2);
         assert_eq!(buffer.current, 1);
-        assert_eq!(buffer.next, 1);
+        assert_eq!(buffer.next, 2);
+
+        buffer.swap_with_default();
+        assert_eq!(buffer.current, 2);
+        assert_eq!(buffer.next, 0);
     }
 
     #[test]
