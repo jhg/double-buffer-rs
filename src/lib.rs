@@ -1,4 +1,5 @@
 #![doc = include_str!("../README.md")]
+#![no_std]
 
 use core::ops::{Deref, DerefMut};
 use core::borrow::{Borrow, BorrowMut};
@@ -50,7 +51,7 @@ impl<T> DoubleBuffer<T> {
     /// then writes will be over the previous current value.
     #[inline]
     pub fn swap(&mut self) {
-        std::mem::swap(&mut self.current, &mut self.next);
+        core::mem::swap(&mut self.current, &mut self.next);
     }
 }
 
@@ -65,7 +66,7 @@ impl<T: Clone> DoubleBuffer<T> {
 
 impl<T: Debug> Debug for DoubleBuffer<T> {
     #[inline]
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.debug_struct("DoubleBuffer")
             .field("current", &self.current)
             .field("next", &self.next)
@@ -142,21 +143,21 @@ impl<T: Eq> Eq for DoubleBuffer<T> {}
 
 impl<T: PartialOrd> PartialOrd<T> for DoubleBuffer<T> {
     #[inline]
-    fn partial_cmp(&self, other: &T) -> Option<std::cmp::Ordering> {
+    fn partial_cmp(&self, other: &T) -> Option<core::cmp::Ordering> {
         self.current.partial_cmp(other)
     }
 }
 
 impl<T: PartialOrd> PartialOrd for DoubleBuffer<T> {
     #[inline]
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+    fn partial_cmp(&self, other: &Self) -> Option<core::cmp::Ordering> {
         self.current.partial_cmp(&other.current)
     }
 }
 
 impl<T: Ord> Ord for DoubleBuffer<T> {
     #[inline]
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+    fn cmp(&self, other: &Self) -> core::cmp::Ordering {
         self.current.cmp(&other.current)
     }
 }
@@ -166,38 +167,29 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_debug_format() {
-        let buffer: DoubleBuffer<u32> = DoubleBuffer::default();
-        assert_eq!(format!("{:?}", buffer), "DoubleBuffer { current: 0, next: 0 }");
-    }
+    fn test_access_and_modify() {
+        let mut buffer: DoubleBuffer<u32> = DoubleBuffer::new(1, 2);
+        assert_eq!(buffer, 1);
 
-    #[test]
-    fn test_modify_and_swap() {
-        let mut buffer: DoubleBuffer<u32> = DoubleBuffer::default();
-        *buffer = 1;
-
-        assert_eq!(buffer, 0);
+        *buffer = 3;
+        assert_eq!(buffer, 1);
 
         buffer.swap();
-
-        assert_eq!(buffer, 1);
-
-        assert_eq!(buffer.current, 1);
-        assert_eq!(buffer.next, 0);
+        assert_eq!(buffer, 3);
     }
 
     #[test]
-    fn test_modify_and_swap_cloning() {
-        let mut buffer: DoubleBuffer<u32> = DoubleBuffer::default();
-        *buffer = 1;
+    fn test_swap() {
+        let mut buffer: DoubleBuffer<u32> = DoubleBuffer::new(1, 2);
+        assert_eq!(buffer.current, 1);
+        assert_eq!(buffer.next, 2);
 
-        assert_eq!(buffer, 0);
-        assert_ne!(buffer, 1);
+        buffer.swap();
+        assert_eq!(buffer.current, 2);
+        assert_eq!(buffer.next, 1);
+    }
 
-        buffer.swap_cloning();
 
-        assert_eq!(buffer, 1);
-        assert_ne!(buffer, 0);
 
         assert_eq!(buffer.current, 1);
         assert_eq!(buffer.next, 1);
