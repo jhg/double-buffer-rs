@@ -59,7 +59,7 @@ impl<T: Clone> DoubleBuffer<T> {
     /// Swaps buffers cloning the next value to the current value,
     /// then writes will continue over the same next value.
     #[inline]
-    pub fn swap_cloning(&mut self) {
+    pub fn swap_with_clone(&mut self) {
         self.current = self.next.clone();
     }
 }
@@ -189,7 +189,16 @@ mod tests {
         assert_eq!(buffer.next, 1);
     }
 
+    #[test]
+    fn test_swap_with_clone() {
+        let mut buffer: DoubleBuffer<u32> = DoubleBuffer::new(1, 2);
+        assert_eq!(buffer.current, 1);
+        assert_eq!(buffer.next, 2);
 
+        buffer.swap_with_clone();
+        assert_eq!(buffer.current, 2);
+        assert_eq!(buffer.next, 2);
+    }
 
         assert_eq!(buffer.current, 1);
         assert_eq!(buffer.next, 1);
