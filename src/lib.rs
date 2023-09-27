@@ -8,6 +8,13 @@ use core::fmt::{Debug, Formatter};
 /// we want all outside code to see the edit as a single
 /// atomic change.
 ///
+/// # Trait implementations
+///
+/// If trait use an immutable reference ([`AsRef<T>`], [`Deref<T>`], [`Borrow<T>`]...) give access to the current value
+/// and mutable references ([`AsMut<T>`], [`DerefMut<T>`], [`BorrowMut<T>`]...) give access to the next value.
+///
+/// # Swapping
+///
 /// There are two ways to swap:
 ///
 /// 1. [`DoubleBuffer::swap()`] - when swapping, the next value will have the previous current value.
