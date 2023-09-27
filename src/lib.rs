@@ -127,14 +127,37 @@ impl<T> AsMut<T> for DoubleBuffer<T> {
 impl<T: PartialEq> PartialEq<T> for DoubleBuffer<T> {
     #[inline]
     fn eq(&self, other: &T) -> bool {
-        self.current == *other
+        self.current.eq(other)
     }
 }
+
+impl<T: PartialEq> PartialEq for DoubleBuffer<T> {
+    #[inline]
+    fn eq(&self, other: &Self) -> bool {
+        self.current.eq(&other.current)
+    }
+}
+
+impl<T: Eq> Eq for DoubleBuffer<T> {}
 
 impl<T: PartialOrd> PartialOrd<T> for DoubleBuffer<T> {
     #[inline]
     fn partial_cmp(&self, other: &T) -> Option<std::cmp::Ordering> {
         self.current.partial_cmp(other)
+    }
+}
+
+impl<T: PartialOrd> PartialOrd for DoubleBuffer<T> {
+    #[inline]
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.current.partial_cmp(&other.current)
+    }
+}
+
+impl<T: Ord> Ord for DoubleBuffer<T> {
+    #[inline]
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.current.cmp(&other.current)
     }
 }
 
