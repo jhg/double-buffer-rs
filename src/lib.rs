@@ -43,7 +43,7 @@ pub struct DoubleBuffer<T> {
 
 impl<T> DoubleBuffer<T> {
     #[inline]
-    pub fn new(current: T, next: T) -> Self {
+    pub const fn new(current: T, next: T) -> Self {
         Self { current, next }
     }
 
