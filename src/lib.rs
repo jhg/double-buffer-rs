@@ -179,6 +179,7 @@ mod tests {
         assert_eq!(buffer, 0);
 
         buffer.swap();
+
         assert_eq!(buffer, 1);
 
         assert_eq!(buffer.current, 1);
@@ -191,11 +192,61 @@ mod tests {
         *buffer = 1;
 
         assert_eq!(buffer, 0);
+        assert_ne!(buffer, 1);
 
         buffer.swap_cloning();
+
         assert_eq!(buffer, 1);
+        assert_ne!(buffer, 0);
 
         assert_eq!(buffer.current, 1);
         assert_eq!(buffer.next, 1);
+    }
+
+    #[test]
+    fn test_greater_and_less_than() {
+        let mut buffer: DoubleBuffer<i32> = DoubleBuffer::default();
+        *buffer = 1;
+
+        assert!(buffer > -1);
+        assert!(buffer < 1);
+
+        buffer.swap();
+
+        assert!(buffer > 0);
+        assert!(buffer < 2);
+    }
+
+    #[test]
+    fn test_modify_bytes_array() {
+        let mut buffer: DoubleBuffer<[u8; 3]> = DoubleBuffer::default();
+        buffer[1] = 2;
+
+        assert_eq!(buffer[1], 0);
+        assert_eq!(buffer, [0, 0, 0]);
+
+        buffer.swap();
+
+        assert_eq!(buffer[1], 2);
+        assert_eq!(buffer, [0, 2, 0]);
+
+        assert_eq!(buffer.current, [0, 2, 0]);
+        assert_eq!(buffer.next, [0, 0, 0]);
+    }
+
+    #[test]
+    fn test_for_iter_mut_bytes_array() {
+        let mut buffer: DoubleBuffer<[u8; 3]> = DoubleBuffer::default();
+        buffer[1] = 2;
+
+        for byte in buffer.iter_mut() {
+            *byte += 1;
+        }
+
+        assert_eq!(buffer, [0, 0, 0]);
+
+        buffer.swap();
+
+        assert_eq!(buffer, [1, 3, 1]);
     }
 }
