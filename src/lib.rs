@@ -16,25 +16,43 @@ use core::fmt::{Debug, Formatter};
 ///
 /// # Swapping
 ///
-/// There are two ways to swap:
+/// There are three ways to swap:
 ///
 /// 1. [`DoubleBuffer::swap()`] - when swapping, the next value will have the previous current value.
-/// 2. [`DoubleBuffer::swap_cloning()`] - when swapping, the next value will keep same and will be cloned to the current value.
+/// 2. [`DoubleBuffer::swap_with_clone()`] - when swapping, the next value will keep same and will be cloned to the current value.
+/// 3. [`DoubleBuffer::swap_with_default()`] - like [`DoubleBuffer::swap()`] but the next value will be set to the default value of the type.
+///
+/// Note that for the third way, the type must implement [`Default`].
 ///
 /// You can read about the two ways [how the buffers are swapped](https://gameprogrammingpatterns.com/double-buffer.html#how-are-the-buffers-swapped)
 /// in "Game Programming Patterns" by Robert Nystrom.
 ///
 /// # Examples
 ///
+/// The following example shows how the buffer is swapped with the three ways:
+///
 /// ```
-/// use double_buffer::DoubleBuffer;
+/// # use double_buffer::DoubleBuffer;
+/// let mut buffer: DoubleBuffer<[u8; 32]> = DoubleBuffer::default();
+/// print!("{:?}", buffer); // DoubleBuffer { current: [0, ...], next: [0, ...] }
 ///
-/// let mut buffer: DoubleBuffer<u32> = DoubleBuffer::default();
-/// *buffer = 1;
+/// buffer[0] = 1;
+/// print!("{:?}", buffer); // DoubleBuffer { current: [0, ...], next: [1, ...] }
 ///
-/// assert_eq!(buffer, 0);
 /// buffer.swap();
-/// assert_eq!(buffer, 1);
+/// print!("{:?}", buffer); // DoubleBuffer { current: [1, ...], next: [0, ...] }
+///
+/// buffer[0] = 2;
+/// print!("{:?}", buffer); // DoubleBuffer { current: [1, ...], next: [2, ...] }
+///
+/// buffer.swap_with_clone();
+/// print!("{:?}", buffer); // DoubleBuffer { current: [2, ...], next: [2, ...] }
+///
+/// buffer[0] = 3;
+/// print!("{:?}", buffer); // DoubleBuffer { current: [2, ...], next: [3, ...] }
+///
+/// buffer.swap_with_default();
+/// print!("{:?}", buffer); // DoubleBuffer { current: [3, ...], next: [0, ...] }
 /// ```
 pub struct DoubleBuffer<T> {
     current: T,
