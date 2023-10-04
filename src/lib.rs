@@ -5,14 +5,19 @@ use core::ops::{Deref, DerefMut};
 use core::borrow::{Borrow, BorrowMut};
 use core::fmt::{Debug, Formatter, Pointer};
 
+enum State {
+    First,
+    Second,
+}
+
 /// Encapsulates a piece of state that can be modified and
 /// we want all outside code to see the edit as a single
 /// atomic change.
 ///
 /// # Trait implementations
 ///
-/// If trait use an immutable reference ([`AsRef<T>`], [`Deref<T>`], [`Borrow<T>`]...) give access to the current value
-/// and mutable references ([`AsMut<T>`], [`DerefMut<T>`], [`BorrowMut<T>`]...) give access to the next value.
+/// If trait use an immutable reference ([`AsRef<T>`], [`Deref`], [`Borrow<T>`]...) give access to the current value
+/// and mutable references ([`AsMut<T>`], [`DerefMut`], [`BorrowMut<T>`]...) give access to the next value.
 ///
 /// # Swapping
 ///
@@ -74,7 +79,7 @@ impl<T> DoubleBuffer<T> {
 }
 
 impl<T: Clone> DoubleBuffer<T> {
-    /// Swaps buffers cloning the next value to the current value,
+    /// Clone the next value to the current value,
     /// then writes will continue over the same next value.
     #[inline]
     pub fn swap_with_clone(&mut self) {
@@ -83,8 +88,9 @@ impl<T: Clone> DoubleBuffer<T> {
 }
 
 impl<T: Default> DoubleBuffer<T> {
-    /// Swaps buffers and sets the next value to the default value of the type,
-    /// then writes will be over the default value.
+    /// Swaps buffers like [`DoubleBuffer::swap()`] and sets the next
+    /// value to the default value of the type, then writes will be
+    /// over the default value.
     #[inline]
     pub fn swap_with_default(&mut self) {
         self.swap();
