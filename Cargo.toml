@@ -5,3 +5,10 @@ version = "0.3.0"
 edition = "2021"
 license = "Unlicense"
 repository = "https://github.com/jhg/double-buffer-rs"
+
+[dev-dependencies]
+criterion = "0.5"
+
+[[bench]]
+name = "criterion_benchmark"
+harness = false
