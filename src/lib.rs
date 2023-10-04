@@ -3,7 +3,7 @@
 
 use core::ops::{Deref, DerefMut};
 use core::borrow::{Borrow, BorrowMut};
-use core::fmt::{Debug, Formatter};
+use core::fmt::{Debug, Formatter, Pointer};
 
 /// Encapsulates a piece of state that can be modified and
 /// we want all outside code to see the edit as a single
@@ -99,6 +99,13 @@ impl<T: Debug> Debug for DoubleBuffer<T> {
             .field("current", &self.current)
             .field("next", &self.next)
             .finish()
+    }
+}
+
+impl<T> Pointer for DoubleBuffer<T> {
+    #[inline]
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{:p}", &self.current)
     }
 }
 
