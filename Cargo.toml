@@ -5,6 +5,8 @@ version = "0.3.0"
 edition = "2021"
 license = "Unlicense"
 repository = "https://github.com/jhg/double-buffer-rs"
+keywords = ["algorithms", "data-structures", "generic", "buffer", "double-buffer"]
+categories = ["algorithms", "data-structures", "no-std", "no-std::no-alloc"]
 
 [dev-dependencies]
 criterion = "0.5"
