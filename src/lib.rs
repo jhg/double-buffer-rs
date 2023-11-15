@@ -112,7 +112,7 @@ impl<T> DoubleBuffer<T> {
     }
 
     #[inline]
-    fn current(&self) -> &T {
+    const fn current(&self) -> &T {
         match self.state {
             State::First => &self.buffers[0],
             State::Second => &self.buffers[1],
@@ -120,7 +120,7 @@ impl<T> DoubleBuffer<T> {
     }
 
     #[inline]
-    fn next(&self) -> &T {
+    const fn next(&self) -> &T {
         match self.state {
             State::First => &self.buffers[1],
             State::Second => &self.buffers[0],
