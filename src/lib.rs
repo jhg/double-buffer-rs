@@ -27,17 +27,13 @@ use core::fmt::{Debug, Formatter, Pointer};
 /// You can read about the two ways [how the buffers are swapped](https://gameprogrammingpatterns.com/double-buffer.html#how-are-the-buffers-swapped)
 /// in "Game Programming Patterns" by Robert Nystrom.
 ///
-/// ## Swapping Benchmarks
-///
-/// The following are the results in a i7 10th gen with 32GB RAM for a `vec![u8; 8192]` buffer:
-///
-/// 1. [`DoubleBuffer::swap()`] - 1.6655 ns 1.6814 ns 1.6964 ns
-/// 2. [`DoubleBuffer::swap_with_default()`] - 1.7783 ns 1.8009 ns 1.8262 ns
-/// 3. [`DoubleBuffer::swap_with_clone()`] - 174.18 ns 177.86 ns 182.07 ns
+/// ## Swapping performance
 ///
 /// If it's not important to keep the pointer address of the current value unchanged,
-/// [`DoubleBuffer::swap()`] is the best option, or [`DoubleBuffer::swap_with_default()`]
-/// if the type implements [`Default`] and starts with the default value is important.
+/// [`DoubleBuffer::swap()`] is the best option.
+///
+/// Or [`DoubleBuffer::swap_with_default()`] if the type implements [`Default`] and
+/// starts with the default value is important.
 ///
 /// Only use [`DoubleBuffer::swap_with_clone()`] if it's important to keep the pointer
 /// address of the current value unchanged.
