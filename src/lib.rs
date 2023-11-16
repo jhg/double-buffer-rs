@@ -5,11 +5,6 @@ use core::ops::{Deref, DerefMut};
 use core::borrow::{Borrow, BorrowMut};
 use core::fmt::{Debug, Formatter, Pointer};
 
-enum State {
-    First,
-    Second,
-}
-
 /// Encapsulates a piece of state that can be modified and
 /// we want all outside code to see the edit as a single
 /// atomic change.
@@ -75,16 +70,14 @@ enum State {
 /// print!("{:?}", buffer); // DoubleBuffer { current: [3, ...], next: [0, ...] }
 /// ```
 pub struct DoubleBuffer<T> {
-    state: State,
+    swapped: bool,
     buffers: [T; 2],
 }
 
 impl<T> DoubleBuffer<T> {
     #[inline]
     pub const fn new(current: T, next: T) -> Self {
-        let state = State::First;
-        let buffers = [current, next];
-        Self { state, buffers }
+        Self { swapped: false, buffers: [current, next] }
     }
 
     /// Swaps the current and next values,
@@ -105,42 +98,43 @@ impl<T> DoubleBuffer<T> {
     /// ```
     #[inline]
     pub fn swap(&mut self) {
-        self.state = match &self.state {
-            State::First => State::Second,
-            State::Second => State::First,
-        };
+        self.swapped = !self.swapped;
+    }
+
+    #[inline]
+    const fn current_offset(&self) -> usize {
+        if self.swapped {
+            return 1;
+        }
+        return 0;
+    }
+
+    #[inline]
+    const fn next_offset(&self) -> usize {
+        if self.swapped {
+            return 0;
+        }
+        return 1;
     }
 
     #[inline]
     const fn current(&self) -> &T {
-        match self.state {
-            State::First => &self.buffers[0],
-            State::Second => &self.buffers[1],
-        }
+        &self.buffers[self.current_offset()]
     }
 
     #[inline]
     const fn next(&self) -> &T {
-        match self.state {
-            State::First => &self.buffers[1],
-            State::Second => &self.buffers[0],
-        }
+        &self.buffers[self.next_offset()]
     }
 
     #[inline]
     fn current_mut(&mut self) -> &mut T {
-        match self.state {
-            State::First => &mut self.buffers[0],
-            State::Second => &mut self.buffers[1],
-        }
+        &mut self.buffers[self.current_offset()]
     }
 
     #[inline]
     fn next_mut(&mut self) -> &mut T {
-        match self.state {
-            State::First => &mut self.buffers[1],
-            State::Second => &mut self.buffers[0],
-        }
+        &mut self.buffers[self.next_offset()]
     }
 }
 
